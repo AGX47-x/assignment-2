@@ -1,1 +1,1 @@
-This diagram shows a Vole Machine Simulator. It features a MenuUI for user interaction, a VoleMachine that acts as the core CPU, a ControlUnit to process instructions, an ALU for math operations, and Memory to store data and programs.
+this intial design is very simple it has a menu that lets the user gets values from registers in memory and can do some arthemitc operations (add,subtract,AND,OR0 and then if the use does't need to do anything else he choose exit to close the program.
