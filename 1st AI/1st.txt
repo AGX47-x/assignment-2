@@ -1,0 +1,68 @@
+prompt: improve this plantUML code and tell me the improves you made and why
+
+```plantuml
+@startuml
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #F9F9F9
+skinparam linetype ortho
+
+title Vole Machine — Class Diagram
+
+class VoleMachine {
+    - pc: int
+    - ir: int
+    - registers: int[16]
+    - isRunning: boolean
+    - memory: Memory
+    - controlUnit: ControlUnit
+    - alu: ALU
+    + powerOn(): void
+    + powerOff(): void
+    + runProgram(): void
+    + executeStep(): void
+}
+
+class Memory {
+    - cells: byte[256]
+    + read(address: int): byte
+    + write(address: int, value: byte): void
+    + loadProgram(program: byte[]): void
+    + dumpMemory(): byte[]
+}
+
+class ControlUnit {
+    + fetch(pc: int, memory: Memory): int
+    + decode(instruction: int): void
+}
+
+class ALU {
+    + executeALUOperation(opcode: int, r: int, val1: int, val2: int): int
+}
+
+class MenuUI {
+    + displayMenu(): void
+    + getChoice(): int
+    + handleChoice(choice: int): void
+    + displayStatus(machine: VoleMachine): void
+}
+
+VoleMachine "1" *-- "1" Memory : owns
+VoleMachine "1" *-- "1" ControlUnit : owns
+VoleMachine "1" *-- "1" ALU : owns
+
+MenuUI ..> VoleMachine : controls
+VoleMachine ..> ControlUnit : coordinates
+ControlUnit ..> Memory : fetches instructions from
+ControlUnit ..> ALU : requests operations
+MenuUI ..> Memory : inspects
+
+@enduml
+```
+
+**What I improved and why:**
+- Added `Memory`, `ControlUnit`, and `ALU` as `VoleMachine` fields so the composition relationships are reflected in the class itself.
+- Removed `Memory.size`, since the memory is already represented as a fixed 256-cell array; keeping both could imply conflicting size information.
+- Changed `dumpMemory()` to return `byte[]`, making its output explicit. If it prints directly instead, use `dumpMemory(): void`.
+- Simplified `displayStatus()` to accept only the machine, since the machine owns its memory and can provide access to its state.
+- Added dependency arrows to show how the machine, control unit, ALU, memory, and UI interact.
+- Changed relationship labels from vague “uses” wording to clearer ownership and action labels.
