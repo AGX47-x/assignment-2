@@ -278,6 +278,7 @@ class LoadInstruction : public Instruction
 public:
     LoadInstruction(int r, int addr) : regIdx(r), memAddress(addr) {
         opcode = 1;
+    }
     void execute(VoleMachine &machine) override {
     int value = machine.getMemory().read(memAddress);
         machine.getRegisters().write(regIdx, value);
@@ -291,6 +292,7 @@ class StoreInstruction : public Instruction
 public:
     StoreInstruction(int r, int addr) : regIdx(r), memAddress(addr) {
         opcode = 2;
+    }
     void execute(VoleMachine &machine) override {
             int value = machine.getRegisters().read(regIdx);
         machine.getMemory().write(memAddress, value);
