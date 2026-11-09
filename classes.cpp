@@ -25,10 +25,10 @@ public:
 
 class VoleMachine
 {
-    int pc;
-    string ir;
-    bool halted;
-    string screen;
+    int pc = 0;        
+    string ir = "0000";
+    bool halted = false;
+    string screen = "";
     Memory memory;
     RegisterFile registers;
 
@@ -50,9 +50,10 @@ public:
                 string hex2 = line.substr(2, 2);
                 memory.write(currentaddress, stoi(hex1, nullptr, 16));
                 memory.write(currentaddress + 1, stoi(hex2, nullptr, 16));
-                currentaddress = 2;
+                currentaddress += 2;
             }
         }
+        pc = startAddress;
         return true;
     }
     bool step()
@@ -61,6 +62,7 @@ public:
             return false;
         int highbyte = memory.read(pc);
         int lowbyte = memory.read(pc + 1);
+        return true;
     }
     void run()
     {
@@ -71,6 +73,9 @@ public:
         }
     }
     bool isHalted() { return halted; }
+    void setHalted(bool h) { 
+        halted = h; 
+    }
     void writeScreen(int value, int address)
     {
         if (address == 0xFF)
@@ -79,7 +84,7 @@ public:
     int getPC() { return pc; }
     void setPC(int address) { pc = address; }
     string getIR() const { return ir; }
-    Memory getMemory() { return memory; }
+    Memory& getMemory() { return memory; }
     RegisterFile getRegisters() { return registers; }
     string getScreen() const { return screen; }
 };
@@ -235,26 +240,75 @@ public:
 
 class MoveInstruction : public Instruction
 {
+    int targetRegister;
+    int sourceRegister;
 public:
-    void execute(VoleMachine &machine) override {}
+    MoveInstruction(int targetRegister, int sourceRegister) : targetRegister(targetRegister), sourceRegister(sourceRegister)  {
+        opcode = 4;
+    }
+    void execute(VoleMachine &machine) override {
+        int val = machine.getRegisters().read(sourceRegister);
+        machine.getRegisters().write(targetRegister, val);
+    }
 };
 
 class ArithmeticLogicInstruction : public Instruction
 {
+    int targetRegister;
+    int sourceRegister1;
+    int sourceRegister2;
 public:
-    void execute(VoleMachine &machine) override {}
+    ArithmeticLogicInstruction(int opCode, int targetRegister, int sourceRegister1, int sourceRegister2) :
+    opcode(opCode), targetRegister(targetRegister), sourceRegister1(sourceRegister1), sourceRegister2(sourceRegister2) {}
+
+    void execute(VoleMachine &machine) override {
+        int val1 = machine.getRegisters().read(sourceRegister1);
+        int val2 = machine.getRegisters().read(sourceRegister2);
+        int result = 0;
+
+        if(opcode == 5 || opcode == 6) {
+            result = val1 + val2;
+        } 
+        else if (opcode == 7) {
+            result = val1 | val2;
+        } 
+        else if (opcode == 8) {
+            result = val1 & val2;
+        } 
+        else if (opcode == 9) {
+            result = val1 ^ val2;
+        }
+        machine.getRegisters().write(targetRegister, result);
+    }
 };
 
 class JumpInstruction : public Instruction
 {
+    int reg;
+    int targetAddress;
 public:
-    void execute(VoleMachine &machine) override {}
+    JumpInstruction(int reg, int targetAddress) : reg(reg), targetAddress(targetAddress) {
+        opcode = 0x0B;
+    }
+    void execute(VoleMachine &machine) override {
+        int regVal = machine.getRegisters().read(reg);
+        int R0Val = machine.getRegisters().read(0);
+
+        if(regVal == R0Val) {
+            machine.setPC(targetAddress);
+        }
+    }
 };
 
 class HaltInstruction : public Instruction
 {
 public:
-    void execute(VoleMachine &machine) override {}
+    HaltInstruction() {
+        opcode = 0x0C;
+    }
+    void execute(VoleMachine &machine) override {
+        machine.setHalted(true);
+    }
 };
 
 int main()
