@@ -32,7 +32,18 @@ bool VoleMachine::loadProgram(std::string filepath, int startAddress)
 void VoleMachine::writeScreen(int value, int address)
 {
     if (address == 0xFF)
-        screen += static_cast<char>(value);
+    {
+
+        if (value >= 0 && value <= 9)
+        {
+            screen += static_cast<char>('0' + value);
+        }
+        else
+        {
+
+            screen += static_cast<char>(value);
+        }
+    }
 }
 
 bool VoleMachine::step()
