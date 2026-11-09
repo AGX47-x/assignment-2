@@ -62,17 +62,6 @@ public:
             return false;
         int highbyte = memory.read(pc);
         int lowbyte = memory.read(pc + 1);
-        stringstream ss;
-        ss << hex << setw(2) << setfill('0') << highbyte 
-           << hex << setw(2) << setfill('0') << lowbyte;
-        ir = ss.str();
-        InstructionDecoder decoder;
-        Instruction* inst = decoder.decode(ir);
-        if (inst != nullptr) {
-            inst->execute(*this);
-            delete inst;
-        }
-        pc += 2;
         return true;
     }
     void run()
@@ -227,76 +216,26 @@ protected:
     int xy;
 
 public:
-    virtual ~Instruction() {}
     virtual void execute(VoleMachine &machine) = 0;
 };
 
 class InstructionDecoder
 {
 public:
-    bool validate(string code) {
-        return code.length() == 4;
-    }
-    Instruction *decode(string code) {
-        if (!validate(code)) return nullptr;
-        char opChar = code[0];
-        int reg = stoi(code.substr(1, 1), nullptr, 16);
-        int address = stoi(code.substr(2, 2), nullptr, 16);
-        int op = stoi(string(1, opChar), nullptr, 16);
-        if (op == 1) {
-            return new LoadInstruction(reg, address);
-        }
-        else if (op == 2) {
-            return new StoreInstruction(reg, address);
-        }
-        else if (op == 4) {
-            int target = reg;
-            int source = stoi(code.substr(3, 1), nullptr, 16);
-            return new MoveInstruction(target, source);
-        }
-        else if (op >= 5 && op <= 9) {
-            int r = reg;
-            int s1 = stoi(code.substr(2, 1), nullptr, 16);
-            int s2 = stoi(code.substr(3, 1), nullptr, 16);
-            return new ArithmeticLogicInstruction(op, r, s1, s2);
-        }
-        else if (op == 0x0B) {
-            return new JumpInstruction(reg, address);
-        }
-        else if (op == 0x0C) {
-            return new HaltInstruction();
-        }
-
-        return nullptr;
-    }
+    bool validate(string code) {}
+    Instruction *decode(string code) {}
 };
 
 class LoadInstruction : public Instruction
 {
-    int regIdx;
-    int memAddress;
 public:
-    LoadInstruction(int r, int addr) : regIdx(r), memAddress(addr) {
-        opcode = 1;
-    }
-    void execute(VoleMachine &machine) override {
-    int value = machine.getMemory().read(memAddress);
-        machine.getRegisters().write(regIdx, value);
-    }
+    void execute(VoleMachine &machine) override {}
 };
 
 class StoreInstruction : public Instruction
 {
-    int regIdx;
-    int memAddress;
 public:
-    StoreInstruction(int r, int addr) : regIdx(r), memAddress(addr) {
-        opcode = 2;
-    }
-    void execute(VoleMachine &machine) override {
-            int value = machine.getRegisters().read(regIdx);
-        machine.getMemory().write(memAddress, value);
-    }
+    void execute(VoleMachine &machine) override {}
 };
 
 class MoveInstruction : public Instruction
