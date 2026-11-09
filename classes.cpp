@@ -25,7 +25,7 @@ public:
 
 class VoleMachine
 {
-    int pc = 0;        
+    int pc = 0;
     string ir = "0000";
     bool halted = false;
     string screen = "";
@@ -63,12 +63,13 @@ public:
         int highbyte = memory.read(pc);
         int lowbyte = memory.read(pc + 1);
         stringstream ss;
-        ss << hex << setw(2) << setfill('0') << highbyte 
+        ss << hex << setw(2) << setfill('0') << highbyte
            << hex << setw(2) << setfill('0') << lowbyte;
         ir = ss.str();
         InstructionDecoder decoder;
-        Instruction* inst = decoder.decode(ir);
-        if (inst != nullptr) {
+        Instruction *inst = decoder.decode(ir);
+        if (inst != nullptr)
+        {
             inst->execute(*this);
             delete inst;
         }
@@ -84,8 +85,9 @@ public:
         }
     }
     bool isHalted() { return halted; }
-    void setHalted(bool h) { 
-        halted = h; 
+    void setHalted(bool h)
+    {
+        halted = h;
     }
     void writeScreen(int value, int address)
     {
@@ -95,7 +97,7 @@ public:
     int getPC() { return pc; }
     void setPC(int address) { pc = address; }
     string getIR() const { return ir; }
-    Memory& getMemory() { return memory; }
+    Memory &getMemory() { return memory; }
     RegisterFile getRegisters() { return registers; }
     string getScreen() const { return screen; }
 };
@@ -234,36 +236,45 @@ public:
 class InstructionDecoder
 {
 public:
-    bool validate(string code) {
+    bool validate(string code)
+    {
         return code.length() == 4;
     }
-    Instruction *decode(string code) {
-        if (!validate(code)) return nullptr;
+    Instruction *decode(string code)
+    {
+        if (!validate(code))
+            return nullptr;
         char opChar = code[0];
         int reg = stoi(code.substr(1, 1), nullptr, 16);
         int address = stoi(code.substr(2, 2), nullptr, 16);
         int op = stoi(string(1, opChar), nullptr, 16);
-        if (op == 1) {
+        if (op == 1)
+        {
             return new LoadInstruction(reg, address);
         }
-        else if (op == 2) {
+        else if (op == 2)
+        {
             return new StoreInstruction(reg, address);
         }
-        else if (op == 4) {
+        else if (op == 4)
+        {
             int target = reg;
             int source = stoi(code.substr(3, 1), nullptr, 16);
             return new MoveInstruction(target, source);
         }
-        else if (op >= 5 && op <= 9) {
+        else if (op >= 5 && op <= 9)
+        {
             int r = reg;
             int s1 = stoi(code.substr(2, 1), nullptr, 16);
             int s2 = stoi(code.substr(3, 1), nullptr, 16);
             return new ArithmeticLogicInstruction(op, r, s1, s2);
         }
-        else if (op == 0x0B) {
+        else if (op == 0x0B)
+        {
             return new JumpInstruction(reg, address);
         }
-        else if (op == 0x0C) {
+        else if (op == 0x0C)
+        {
             return new HaltInstruction();
         }
 
@@ -275,12 +286,15 @@ class LoadInstruction : public Instruction
 {
     int regIdx;
     int memAddress;
+
 public:
-    LoadInstruction(int r, int addr) : regIdx(r), memAddress(addr) {
+    LoadInstruction(int r, int addr) : regIdx(r), memAddress(addr)
+    {
         opcode = 1;
     }
-    void execute(VoleMachine &machine) override {
-    int value = machine.getMemory().read(memAddress);
+    void execute(VoleMachine &machine) override
+    {
+        int value = machine.getMemory().read(memAddress);
         machine.getRegisters().write(regIdx, value);
     }
 };
@@ -289,12 +303,15 @@ class StoreInstruction : public Instruction
 {
     int regIdx;
     int memAddress;
+
 public:
-    StoreInstruction(int r, int addr) : regIdx(r), memAddress(addr) {
+    StoreInstruction(int r, int addr) : regIdx(r), memAddress(addr)
+    {
         opcode = 2;
     }
-    void execute(VoleMachine &machine) override {
-            int value = machine.getRegisters().read(regIdx);
+    void execute(VoleMachine &machine) override
+    {
+        int value = machine.getRegisters().read(regIdx);
         machine.getMemory().write(memAddress, value);
     }
 };
@@ -303,11 +320,14 @@ class MoveInstruction : public Instruction
 {
     int targetRegister;
     int sourceRegister;
+
 public:
-    MoveInstruction(int targetRegister, int sourceRegister) : targetRegister(targetRegister), sourceRegister(sourceRegister)  {
+    MoveInstruction(int targetRegister, int sourceRegister) : targetRegister(targetRegister), sourceRegister(sourceRegister)
+    {
         opcode = 4;
     }
-    void execute(VoleMachine &machine) override {
+    void execute(VoleMachine &machine) override
+    {
         int val = machine.getRegisters().read(sourceRegister);
         machine.getRegisters().write(targetRegister, val);
     }
@@ -318,25 +338,30 @@ class ArithmeticLogicInstruction : public Instruction
     int targetRegister;
     int sourceRegister1;
     int sourceRegister2;
-public:
-    ArithmeticLogicInstruction(int opCode, int targetRegister, int sourceRegister1, int sourceRegister2) :
-    opcode(opCode), targetRegister(targetRegister), sourceRegister1(sourceRegister1), sourceRegister2(sourceRegister2) {}
 
-    void execute(VoleMachine &machine) override {
+public:
+    ArithmeticLogicInstruction(int opCode, int targetRegister, int sourceRegister1, int sourceRegister2) : opcode(opCode), targetRegister(targetRegister), sourceRegister1(sourceRegister1), sourceRegister2(sourceRegister2) {}
+
+    void execute(VoleMachine &machine) override
+    {
         int val1 = machine.getRegisters().read(sourceRegister1);
         int val2 = machine.getRegisters().read(sourceRegister2);
         int result = 0;
 
-        if(opcode == 5 || opcode == 6) {
+        if (opcode == 5 || opcode == 6)
+        {
             result = val1 + val2;
-        } 
-        else if (opcode == 7) {
+        }
+        else if (opcode == 7)
+        {
             result = val1 | val2;
-        } 
-        else if (opcode == 8) {
+        }
+        else if (opcode == 8)
+        {
             result = val1 & val2;
-        } 
-        else if (opcode == 9) {
+        }
+        else if (opcode == 9)
+        {
             result = val1 ^ val2;
         }
         machine.getRegisters().write(targetRegister, result);
@@ -347,15 +372,19 @@ class JumpInstruction : public Instruction
 {
     int reg;
     int targetAddress;
+
 public:
-    JumpInstruction(int reg, int targetAddress) : reg(reg), targetAddress(targetAddress) {
+    JumpInstruction(int reg, int targetAddress) : reg(reg), targetAddress(targetAddress)
+    {
         opcode = 0x0B;
     }
-    void execute(VoleMachine &machine) override {
+    void execute(VoleMachine &machine) override
+    {
         int regVal = machine.getRegisters().read(reg);
         int R0Val = machine.getRegisters().read(0);
 
-        if(regVal == R0Val) {
+        if (regVal == R0Val)
+        {
             machine.setPC(targetAddress);
         }
     }
@@ -364,10 +393,12 @@ public:
 class HaltInstruction : public Instruction
 {
 public:
-    HaltInstruction() {
+    HaltInstruction()
+    {
         opcode = 0x0C;
     }
-    void execute(VoleMachine &machine) override {
+    void execute(VoleMachine &machine) override
+    {
         machine.setHalted(true);
     }
 };
