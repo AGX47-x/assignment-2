@@ -1,0 +1,4 @@
+; Program: Print letter 'A' to screen
+2141 ; Load immediate hex value 41 ('A') into register 0
+31FF ; Store register 0 into memory address FF (Screen output)
+C000 ; Halt execution

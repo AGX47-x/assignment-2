@@ -1,0 +1,24 @@
+// File with team details and who did which part of the code
+SECTION:       S19,S20,S29,S30
+
+ZIP_FILE:      CS213_A2_Part2_S19,S20,S29,S30_20250092_20250277_20250398_20250422.zip
+
+ID1:           20250092
+NAME1:         Andrew Fawzy Mina
+FILES1:        VoleMachine.cpp, VoleMachine.h, SimulatorUI.cpp , SimulatorUI.h
+
+ID2:           20250277
+NAME2:         Samy Atef Masoud
+FILES2:        IstructionDecoder.cpp, Instruction.cpp, LoadInstruction.cpp, StoreIsntruction.cpp, IstructionDecoder.h, Instruction.h, LoadInstruction.h, StoreIsntruction.h
+
+ID3:           20250398
+NAME3:         Ali Sameh Mohamed
+FILES3:        MoveInstruction.cpp, AthematicInstruction.cpp, JumpInstruction.cpp, HaltInstruction.cpp, MoveInstruction.h, AthematicInstruction.h, JumpInstruction.h, HaltInstruction.h
+
+ID4:           20250422
+NAME4:         Omar Ashraf Mostafa Helal
+FILES4:        Memory.cpp, RegisterFile.cpp, Memory.h, RegisterFile.h
+
+GITHUB:        https://github.com/AGX47-x/assignment-2
+VIDEO_DESIGN:  https://drive.google.com/file/d/1ponEPLA66F3uJvZX4LV4KhWAh7IExR6_/view?usp=drive_link
+VIDEO_GUI:     

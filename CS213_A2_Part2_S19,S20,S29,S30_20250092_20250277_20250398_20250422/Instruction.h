@@ -4,6 +4,7 @@
 #include <string>
 
 class VoleMachine;
+
 class Instruction
 {
 protected:
