@@ -33,14 +33,12 @@ void VoleMachine::writeScreen(int value, int address)
 {
     if (address == 0xFF)
     {
-
-        if (value >= 0 && value <= 9)
+        if (value <= 9 && value >= 0)
         {
-            screen += static_cast<char>('0' + value);
+            screen += static_cast<char>(30 + value);
         }
         else
         {
-
             screen += static_cast<char>(value);
         }
     }

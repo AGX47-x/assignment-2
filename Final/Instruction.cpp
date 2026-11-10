@@ -2,7 +2,6 @@
 #include "VoleMachine.h"
 #include <string>
 
-// LoadInstruction
 LoadInstruction::LoadInstruction(int r, int addr) : regIdx(r), memAddress(addr) { opcode = 1; }
 void LoadInstruction::execute(VoleMachine &machine)
 {
@@ -10,14 +9,12 @@ void LoadInstruction::execute(VoleMachine &machine)
     machine.getRegisters().write(regIdx, value);
 }
 
-// LoadImmediateInstruction
 LoadImmediateInstruction::LoadImmediateInstruction(int r, int val) : regIdx(r), value(val) { opcode = 2; }
 void LoadImmediateInstruction::execute(VoleMachine &machine)
 {
     machine.getRegisters().write(regIdx, value);
 }
 
-// StoreInstruction
 StoreInstruction::StoreInstruction(int r, int addr) : regIdx(r), memAddress(addr) { opcode = 3; }
 void StoreInstruction::execute(VoleMachine &machine)
 {
@@ -29,7 +26,6 @@ void StoreInstruction::execute(VoleMachine &machine)
     }
 }
 
-// MoveInstruction
 MoveInstruction::MoveInstruction(int target, int source) : targetRegister(target), sourceRegister(source) { opcode = 4; }
 void MoveInstruction::execute(VoleMachine &machine)
 {
@@ -37,7 +33,6 @@ void MoveInstruction::execute(VoleMachine &machine)
     machine.getRegisters().write(targetRegister, val);
 }
 
-// ArithmeticLogicInstruction
 ArithmeticLogicInstruction::ArithmeticLogicInstruction(int opCode, int target, int s1, int s2)
     : targetRegister(target), sourceRegister1(s1), sourceRegister2(s2) { opcode = opCode; }
 
@@ -66,7 +61,6 @@ void ArithmeticLogicInstruction::execute(VoleMachine &machine)
     machine.getRegisters().write(targetRegister, result);
 }
 
-// JumpInstruction
 JumpInstruction::JumpInstruction(int r, int addr) : reg(r), targetAddress(addr) { opcode = 0x0B; }
 void JumpInstruction::execute(VoleMachine &machine)
 {
@@ -78,14 +72,12 @@ void JumpInstruction::execute(VoleMachine &machine)
     }
 }
 
-// HaltInstruction
 HaltInstruction::HaltInstruction() { opcode = 0x0C; }
 void HaltInstruction::execute(VoleMachine &machine)
 {
     machine.setHalted(true);
 }
 
-// InstructionDecoder
 bool InstructionDecoder::validate(std::string code)
 {
     return code.length() == 4;
